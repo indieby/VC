@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Web.Http;
+using System.Web.Http.OData;
+using System.Web.Http.Results;
 using vc.model;
 using vc.service;
 
@@ -13,18 +16,23 @@ namespace vc.Controllers
             _employeeService = employeeService;
         }
 
-        public IHttpActionResult Get()
+        [EnableQuery]
+        public IQueryable<Employee> Get()
         {
             var employees = _employeeService.GetEmployees();
-            return Ok(employees);
+            return employees.AsQueryable();
         }
 
         public IHttpActionResult Post([FromBody] Employee employee)
         {
             _employeeService.CreateEmployee(employee);
-            _employeeService.Save();
-
             return Ok();
+        }
+
+        protected override OkResult Ok()
+        {
+            _employeeService.Save();
+            return base.Ok();
         }
     }
 }

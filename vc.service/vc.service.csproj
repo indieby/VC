@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="EmployeeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VacationException.cs" />
     <Compile Include="VacationService.cs" />
   </ItemGroup>
   <ItemGroup>

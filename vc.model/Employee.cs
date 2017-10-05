@@ -13,7 +13,5 @@ namespace vc.model
         public virtual Position Position { get; set; }
 
         public int PositionId { get; set; }
-
-        public virtual List<Vacation> Vacations { get; set; }
     }
 }

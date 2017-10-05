@@ -21,7 +21,7 @@ namespace vc
         static void SetAutofacContainer()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterApiControllers();
+            
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerRequest();
             builder.RegisterType<DbFactory>().As<IDbFactory>().InstancePerRequest();
 

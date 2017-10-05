@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Data.Common;
+using System.Data.Entity;
 using vc.data.Configuration;
 using vc.model;
 
@@ -20,6 +21,14 @@ namespace vc.data
             modelBuilder.Configurations.Add(new EmployeeConfiguration());
             modelBuilder.Configurations.Add(new PositionConfiguration());
             modelBuilder.Configurations.Add(new VacationConfiguration());
+        }
+
+        public VCEntities()
+        {
+        }
+
+        public VCEntities(DbConnection connection) : base(connection, false)
+        {            
         }
     }
 }

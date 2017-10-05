@@ -59,7 +59,7 @@ namespace vc.data
 
         public virtual IEnumerable<T> GetAll()
         {
-            return dbSet.ToList();
+            return dbSet;
         }
 
         public virtual IEnumerable<T> GetMany(Expression<Func<T, bool>> where)

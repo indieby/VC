@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.OData.Extensions;
 using Autofac.Integration.WebApi;
 
 namespace vc
@@ -15,6 +16,9 @@ namespace vc
 
             // Web API routes
             config.MapHttpAttributeRoutes();
+
+            //Enable odata
+            config.AddODataQueryFilter();
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
