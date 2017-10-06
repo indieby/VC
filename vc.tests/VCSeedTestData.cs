@@ -9,7 +9,7 @@ namespace vc.tests
     public class VCSeedTestData : DropCreateDatabaseAlways<VCEntities>
     {
         public static int EmployeesCount => GetEmployees().Count;
-        public static int VacationsCount => GetVacations().Count;
+        public static int VacationsCount => TestVacations.Count;
 
         protected override void Seed(VCEntities context)
         {
@@ -21,7 +21,7 @@ namespace vc.tests
 
             context.Commit();
 
-            GetVacations().ForEach(v => context.Vacations.Add(v));
+            TestVacations.ForEach(v => context.Vacations.Add(v));
 
             context.Commit();
         }
@@ -78,35 +78,6 @@ namespace vc.tests
             };
         }
 
-        private static List<Vacation> GetVacations()
-        {
-            return new List<Vacation>
-            {
-                new Vacation
-                {
-                    EmployeeId = 3,
-                    From = new DateTime(2017, 03, 01),
-                    To = new DateTime(2017, 03, 20)
-                },
-                new Vacation
-                {
-                    EmployeeId = 1,
-                    From = new DateTime(2017, 05, 20),
-                    To = new DateTime(2017, 06, 01)
-                },
-                new Vacation
-                {
-                    EmployeeId = 3,
-                    From = new DateTime(2017, 11, 01),
-                    To = new DateTime(2017, 11, 20)
-                },
-                new Vacation
-                {
-                    EmployeeId = 1,
-                    From = new DateTime(2017, 07, 01),
-                    To = new DateTime(2017, 07, 06)
-                }
-            };
-        }
+        public static List<Vacation> TestVacations = new List<Vacation>();
     }
 }

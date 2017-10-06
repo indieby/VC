@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using vc.data.Infrastructure;
@@ -36,8 +37,7 @@ namespace vc.data
 
         public virtual void Update(T entity)
         {
-            dbSet.Attach(entity);
-            dataContext.Entry(entity).State = EntityState.Modified;
+            dbSet.AddOrUpdate(entity);
         }
 
         public virtual void Delete(T entity)
@@ -57,14 +57,14 @@ namespace vc.data
             return dbSet.Find(id);
         }
 
-        public virtual IEnumerable<T> GetAll()
+        public virtual IQueryable<T> GetAll()
         {
             return dbSet;
         }
 
-        public virtual IEnumerable<T> GetMany(Expression<Func<T, bool>> where)
+        public virtual IQueryable<T> GetMany(Expression<Func<T, bool>> where)
         {
-            return dbSet.Where(where).ToList();
+            return dbSet.Where(where);
         }
 
         public T Get(Expression<Func<T, bool>> where)

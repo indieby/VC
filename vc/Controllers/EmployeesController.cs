@@ -20,7 +20,7 @@ namespace vc.Controllers
         public IQueryable<Employee> Get()
         {
             var employees = _employeeService.GetEmployees();
-            return employees.AsQueryable();
+            return employees;
         }
 
         public IHttpActionResult Post([FromBody] Employee employee)

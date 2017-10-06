@@ -2,13 +2,12 @@
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.Results;
-using vc.Filters;
 using vc.model;
 using vc.service;
+using vc.service.HelperClasses;
 
 namespace vc.Controllers
 {
-    [VacationExceptionFilter]
     public class VacationsController : ApiController
     {
         private readonly IVacationService _vacationService;
@@ -22,7 +21,7 @@ namespace vc.Controllers
         public IQueryable<Vacation> Get()
         {
             var vacations = _vacationService.GetVacations();
-            return vacations.AsQueryable();
+            return vacations;
         }
         
         public IHttpActionResult Post([FromBody]Vacation vacation)
@@ -40,14 +39,28 @@ namespace vc.Controllers
 
         public IHttpActionResult Put(int id, [FromBody] Vacation vacation)
         {
-            _vacationService.UpdateVacation(id, vacation);
-            return Ok();
+            try
+            {
+                _vacationService.UpdateVacation(id, vacation);
+                return Ok();
+            }
+            catch (VacationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         public IHttpActionResult Delete(int id)
         {
-            _vacationService.DeleteVacation(id);
-            return Ok();
+            try
+            {
+                _vacationService.DeleteVacation(id);
+                return Ok();
+            }
+            catch (VacationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         protected override OkResult Ok()

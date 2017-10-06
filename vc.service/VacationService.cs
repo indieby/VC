@@ -4,12 +4,13 @@ using System.Linq;
 using vc.data.Infrastructure;
 using vc.data.Repositories;
 using vc.model;
+using vc.service.HelperClasses;
 
 namespace vc.service
 {
     public interface IVacationService
     {
-        IEnumerable<Vacation> GetVacations();
+        IQueryable<Vacation> GetVacations();
         void CreateVacation(Vacation vacation);
         void UpdateVacation(int id, Vacation vacation);
         void DeleteVacation(int id);
@@ -29,7 +30,7 @@ namespace vc.service
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<Vacation> GetVacations()
+        public IQueryable<Vacation> GetVacations()
         {
             return _vacationRepository.GetAll();
         }
@@ -70,46 +71,56 @@ namespace vc.service
                     throw new VacationException("Editing or deleting can be done only for the upcoming vacation");
             }
 
-            var vacationDays = (vacation.To - vacation.From).TotalDays;
+            if (vacation != null)
+            {
+                if (vacation.From == default(DateTime) || vacation.To == default(DateTime) ||
+                    vacation.From > vacation.To)
+                    throw new VacationException();
 
-            //Максимальное количество дней отпуска в году - 24 календарных дня
-            var curYear = now.Year;
+                var vacationDays = (vacation.To - vacation.From).TotalDays;
 
-            var employeeVacationsThisYear = _vacationRepository
-                .GetMany(v => v.EmployeeId == vacation.EmployeeId && v.From.Year == curYear).ToList();
+                //Максимальное количество дней отпуска в году
+                var curYear = now.Year;
 
-            var employeeVacationsDaysThisYear = employeeVacationsThisYear
-                .Select(v => v.To.Year == curYear ? v.To - v.From : new DateTime(curYear, 12, 31) - v.From)
-                .Sum(span => span.TotalDays);
+                var employeeVacationsThisYear = _vacationRepository
+                    .GetMany(v => v.EmployeeId == vacation.EmployeeId && v.From.Year == curYear).ToList();
 
-            if (employeeVacationsDaysThisYear + vacationDays > 24)
-                throw new VacationException("Vacation cannot be greater than 24 days per year");
+                var employeeVacationsDaysThisYear = employeeVacationsThisYear
+                    .Select(v => v.To.Year == curYear ? v.To - v.From : new DateTime(curYear, 12, 31) - v.From)
+                    .Sum(span => span.TotalDays);
 
-            //Минимальный непрерывный период отпуска - 2 календарных дня
-            if (vacationDays < 2)
-                throw new VacationException("Vacation lenght can't be less than 2 days");
+                if (employeeVacationsDaysThisYear + vacationDays > VacationRules.MaxDaysPerYear)
+                    throw new VacationException(
+                        $"Vacation cannot be greater than {VacationRules.MaxDaysPerYear} days per year");
 
-            //Максимальный непрерывный период отпуска - 15 календарных дней
-            if (vacationDays > 15)
-                throw new VacationException("Vacation lenght can't be greater than 15 days");
+                //Минимальный непрерывный период отпуска
+                if (vacationDays < VacationRules.MinDays)
+                    throw new VacationException($"Vacation lenght can't be less than {VacationRules.MinDays} days");
 
-            //Минимальный период между периодами отпуска равен размеру первого отпуска (если сотрудник был в отпуске 10 дней, в последующие 10 дней он не может брать отпуск)
-            var lastEmployeeVacation = employeeVacationsThisYear.OrderByDescending(v => v.To).FirstOrDefault();
-            if (lastEmployeeVacation != null && vacation.From - lastEmployeeVacation.To < lastEmployeeVacation.To - lastEmployeeVacation.From)
-                throw new VacationException("Period between vacations can't be less than the previous vacation");
+                //Максимальный непрерывный период отпуска
+                if (vacationDays > VacationRules.MaxDays)
+                    throw new VacationException($"Vacation lenght can't be greater than {VacationRules.MaxDays} days");
 
-            //В отпуске имеют право находиться не более 50% сотрудников одной должности (если в компании 5 бухгалтеров, одновременно в отпуске может быть не более 2)
-            var employee = _employeeRepository.GetById(vacation.EmployeeId);
-            
-            var employeePositionVacations =
-                _vacationRepository.GetMany(v =>
-                    v.Employee.PositionId == employee.PositionId && v.To > now).Count();
+                //Минимальный период между периодами отпуска равен размеру первого отпуска (если сотрудник был в отпуске 10 дней, в последующие 10 дней он не может брать отпуск)
+                var lastEmployeeVacation = employeeVacationsThisYear.OrderByDescending(v => v.To).FirstOrDefault();
+                if (lastEmployeeVacation != null && vacation.From - lastEmployeeVacation.To <
+                    lastEmployeeVacation.To - lastEmployeeVacation.From)
+                    throw new VacationException("Period between vacations can't be less than the previous vacation");
 
-            var employeePositions =
-                _employeeRepository.GetMany(e => e.PositionId == employee.PositionId).Count();
+                //В отпуске имеют право находиться не более x% сотрудников одной должности
+                var employee = _employeeRepository.GetById(vacation.EmployeeId);
 
-            if (employeePositionVacations + 1 > employeePositions / 2)
-                throw new VacationException("On vacation, not more than 50% of employees in one position");
+                var employeePositionVacations =
+                    _vacationRepository.GetMany(v =>
+                        v.Employee.PositionId == employee.PositionId && v.To > now && v.From < now).Count();
+
+                var employeePositions =
+                    _employeeRepository.GetMany(e => e.PositionId == employee.PositionId).Count();
+
+                if (employeePositionVacations + 1 > employeePositions * VacationRules.PositionOnVacationMaxProcent)
+                    throw new VacationException(
+                        $"On vacation, not more than {VacationRules.PositionOnVacationMaxProcent * 100}% of employees in one position");
+            }
         }
     }
 }

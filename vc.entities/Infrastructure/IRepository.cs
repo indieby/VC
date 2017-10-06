@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace vc.data.Infrastructure
@@ -12,7 +13,7 @@ namespace vc.data.Infrastructure
         void Delete(Expression<Func<T, bool>> where);
         T GetById(int id);
         T Get(Expression<Func<T, bool>> where);
-        IEnumerable<T> GetAll();
-        IEnumerable<T> GetMany(Expression<Func<T, bool>> where);
+        IQueryable<T> GetAll();
+        IQueryable<T> GetMany(Expression<Func<T, bool>> where);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using vc.data.Infrastructure;
 using vc.data.Repositories;
 using vc.model;
@@ -7,7 +8,7 @@ namespace vc.service
 {
     public interface IEmployeeService
     {
-        IEnumerable<Employee> GetEmployees();
+        IQueryable<Employee> GetEmployees();
         void CreateEmployee(Employee employee);
         void Save();
     }
@@ -23,7 +24,7 @@ namespace vc.service
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<Employee> GetEmployees()
+        public IQueryable<Employee> GetEmployees()
         {
             return _employeeRepository.GetAll();
         }
