@@ -10,6 +10,7 @@ namespace vc
             System.Data.Entity.Database.SetInitializer(new VCSeedData());
 
             Bootstrapper.Run();
+
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }
     }

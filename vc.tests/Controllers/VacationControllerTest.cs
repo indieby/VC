@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Http.Results;
 using Autofac;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -53,8 +54,8 @@ namespace vc.tests.Controllers
 
 
             // Assert
-            Assert.IsNotInstanceOfType(result1, typeof(OkResult));
-            Assert.IsInstanceOfType(result2, typeof(OkResult));
+            Assert.AreNotEqual(HttpStatusCode.Created, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Created, (result2 as StatusCodeResult)?.StatusCode);
         }
 
         [TestMethod]
@@ -82,8 +83,8 @@ namespace vc.tests.Controllers
             });
 
             // Assert
-            Assert.IsNotInstanceOfType(result1, typeof(OkResult));
-            Assert.IsInstanceOfType(result2, typeof(OkResult));
+            Assert.AreNotEqual(HttpStatusCode.Created, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Created, (result2 as StatusCodeResult)?.StatusCode);
         }
 
         [TestMethod]
@@ -126,10 +127,10 @@ namespace vc.tests.Controllers
             });
 
             //Assert
-            Assert.IsNotInstanceOfType(result1, typeof(OkResult));
-            Assert.IsInstanceOfType(result2, typeof(OkResult));
-            Assert.IsInstanceOfType(result3, typeof(OkResult));
-            Assert.IsNotInstanceOfType(result4, typeof(OkResult));
+            Assert.AreNotEqual(HttpStatusCode.Created, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Created, (result2 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Created, (result3 as StatusCodeResult)?.StatusCode);
+            Assert.AreNotEqual(HttpStatusCode.Created, (result4 as StatusCodeResult)?.StatusCode);
         }
 
         [TestMethod]
@@ -166,9 +167,9 @@ namespace vc.tests.Controllers
             });
 
             //Assert
-            Assert.IsInstanceOfType(result1, typeof(OkResult));
-            Assert.IsNotInstanceOfType(result2, typeof(OkResult));
-            Assert.IsInstanceOfType(result3, typeof(OkResult));
+            Assert.AreEqual(HttpStatusCode.Created, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreNotEqual(HttpStatusCode.Created, (result2 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Created, (result3 as StatusCodeResult)?.StatusCode);
         }
 
         [TestMethod]
@@ -207,9 +208,9 @@ namespace vc.tests.Controllers
             });
 
             //Assert
-            Assert.IsInstanceOfType(result1, typeof(OkResult));
-            Assert.IsNotInstanceOfType(result2, typeof(OkResult));
-            Assert.IsInstanceOfType(result3, typeof(OkResult));
+            Assert.AreEqual(HttpStatusCode.Created, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreNotEqual(HttpStatusCode.Created, (result2 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Created, (result3 as StatusCodeResult)?.StatusCode);
         }
 
         [TestMethod]
@@ -251,8 +252,8 @@ namespace vc.tests.Controllers
             });
 
             // Assert
-            Assert.IsNotInstanceOfType(result1, typeof(OkResult));
-            Assert.IsInstanceOfType(result2, typeof(OkResult));
+            Assert.AreNotEqual(HttpStatusCode.NoContent, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, (result2 as StatusCodeResult)?.StatusCode);
         }
 
         [TestMethod]
@@ -284,8 +285,8 @@ namespace vc.tests.Controllers
             var result2 = controller.Delete(2);
 
             // Assert
-            Assert.IsNotInstanceOfType(result1, typeof(OkResult));
-            Assert.IsInstanceOfType(result2, typeof(OkResult));
+            Assert.AreNotEqual(HttpStatusCode.NoContent, (result1 as StatusCodeResult)?.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, (result2 as StatusCodeResult)?.StatusCode);
         }
     }
 }

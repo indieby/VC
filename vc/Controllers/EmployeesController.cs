@@ -1,7 +1,8 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Web.Http;
-using System.Web.Http.OData;
 using System.Web.Http.Results;
+using System.Web.OData;
 using vc.model;
 using vc.service;
 
@@ -16,6 +17,10 @@ namespace vc.Controllers
             _employeeService = employeeService;
         }
 
+        /// <summary>
+        /// List of all vacations
+        /// </summary>
+        /// <returns></returns>
         [EnableQuery]
         public IQueryable<Employee> Get()
         {
@@ -23,16 +28,30 @@ namespace vc.Controllers
             return employees;
         }
 
-        public IHttpActionResult Post([FromBody] Employee employee)
+        /// <summary>
+        /// Single employee by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Employee Get(int id)
         {
-            _employeeService.CreateEmployee(employee);
-            return Ok();
+            return _employeeService.GetEmployees().FirstOrDefault(e => e.Id == id);
         }
 
-        protected override OkResult Ok()
+        /// <summary>
+        /// Create single employee
+        /// </summary>
+        /// <param name="employee"></param>
+        /// <returns></returns>
+        public IHttpActionResult Post([FromBody] Employee employee)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            _employeeService.CreateEmployee(employee);
             _employeeService.Save();
-            return base.Ok();
+
+            return StatusCode(HttpStatusCode.Created);
         }
     }
 }

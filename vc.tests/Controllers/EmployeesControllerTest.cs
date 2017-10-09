@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Web.Http.Results;
 using Autofac;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,7 +36,7 @@ namespace vc.tests.Controllers
             var result = controller.Post(new Employee {FirstName = "Test1", PositionId = 1});
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(OkResult));
+            Assert.AreEqual(HttpStatusCode.Created, (result as StatusCodeResult)?.StatusCode);
         }
     }
 }

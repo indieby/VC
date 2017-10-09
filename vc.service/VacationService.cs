@@ -110,6 +110,9 @@ namespace vc.service
                 //В отпуске имеют право находиться не более x% сотрудников одной должности
                 var employee = _employeeRepository.GetById(vacation.EmployeeId);
 
+                if(employee == null)
+                    throw new Exception("Employee not found");
+
                 var employeePositionVacations =
                     _vacationRepository.GetMany(v =>
                         v.Employee.PositionId == employee.PositionId && v.To > now && v.From < now).Count();
