@@ -18,7 +18,7 @@ namespace vc.Controllers
         }
 
         /// <summary>
-        /// List of all vacations
+        /// List of all employees
         /// </summary>
         /// <returns></returns>
         [EnableQuery]

@@ -79,7 +79,7 @@ namespace vc.service
 
                 var vacationDays = (vacation.To - vacation.From).TotalDays;
 
-                //Максимальное количество дней отпуска в году
+                //Max days per year
                 var curYear = now.Year;
 
                 var employeeVacationsThisYear = _vacationRepository
@@ -93,21 +93,21 @@ namespace vc.service
                     throw new VacationException(
                         $"Vacation cannot be greater than {VacationRules.MaxDaysPerYear} days per year");
 
-                //Минимальный непрерывный период отпуска
+                //Min vacation period
                 if (vacationDays < VacationRules.MinDays)
                     throw new VacationException($"Vacation lenght can't be less than {VacationRules.MinDays} days");
 
-                //Максимальный непрерывный период отпуска
+                //Max vacation period
                 if (vacationDays > VacationRules.MaxDays)
                     throw new VacationException($"Vacation lenght can't be greater than {VacationRules.MaxDays} days");
 
-                //Минимальный период между периодами отпуска равен размеру первого отпуска (если сотрудник был в отпуске 10 дней, в последующие 10 дней он не может брать отпуск)
+                //Min period between vacations
                 var lastEmployeeVacation = employeeVacationsThisYear.OrderByDescending(v => v.To).FirstOrDefault();
                 if (lastEmployeeVacation != null && vacation.From - lastEmployeeVacation.To <
                     lastEmployeeVacation.To - lastEmployeeVacation.From)
                     throw new VacationException("Period between vacations can't be less than the previous vacation");
 
-                //В отпуске имеют право находиться не более x% сотрудников одной должности
+                //Vacations by positions
                 var employee = _employeeRepository.GetById(vacation.EmployeeId);
 
                 if(employee == null)
